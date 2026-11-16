@@ -537,5 +537,48 @@ async function deactivateSession(rollNumber, uniqueCode) {
     }
 }
 
+// Verification system - mark student as verified when they login
+async function markStudentVerified(rollNumber, uniqueCode) {
+    if (!neonClient.isInitialized) {
+        return { success: false, error: 'Database not available' };
+    }
+    
+    try {
+        // First check if credentials match
+        const checkResult = await neonClient
+            .from('student_verification')
+            .select('*')
+            .eq('roll_number', rollNumber)
+            .eq('unique_code', uniqueCode)
+            .single()
+            .execute();
+        
+        if (checkResult.error || !checkResult.data) {
+            return { success: false, error: 'Invalid credentials' };
+        }
+        
+        // Update to mark as verified
+        const updateSql = `
+            UPDATE student_verification 
+            SET verified_text = 'Verified', 
+                verified_at = NOW() 
+            WHERE roll_number = '${rollNumber.replace(/'/g, "''")}' 
+            AND unique_code = '${uniqueCode.replace(/'/g, "''")}'
+        `;
+        
+        const result = await neonClient.query(updateSql);
+        
+        if (result.error) {
+            return { success: false, error: result.error };
+        }
+        
+        return { success: true, verified: true };
+    } catch (err) {
+        console.error('Error marking student verified:', err);
+        return { success: false, error: err.message };
+    }
+}
+
 // Export for use in other scripts
 window.neonClient = neonClient;
+window.markStudentVerified = markStudentVerified;

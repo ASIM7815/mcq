@@ -292,6 +292,18 @@ async function proceedToInstructions() {
             return;
         }
 
+        // ✅ Mark student as VERIFIED in database
+        if (typeof markStudentVerified !== 'undefined') {
+            try {
+                const verificationResult = await markStudentVerified(rollNumberInput, codeInput);
+                if (verificationResult.success) {
+                    console.log('✅ Student marked as VERIFIED in database!');
+                }
+            } catch (err) {
+                console.warn('Could not mark verification, but continuing:', err);
+            }
+        }
+
         // ✅ SUCCESS - Show database connection confirmation
         console.log('✅ ============================================');
         console.log('✅ AUTHENTICATION SUCCESSFUL!');
