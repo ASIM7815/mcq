@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Neon Connection</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 15px;
+            background: #f9f9f9;
+            border-left: 4px solid #4CAF50;
+            border-radius: 4px;
+        }
+        .status {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+        }
+        .success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+        button {
+            background: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 5px;
+        }
+        button:hover {
+            background: #45a049;
+        }
+        button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+        pre {
+            background: #f4f4f4;
+            padding: 10px;
+            border-radius: 4px;
+            overflow-x: auto;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧪 Neon Database Connection Test</h1>
+        
+        <div class="test-section">
+            <h3>Test 1: Basic Connection</h3>
+            <button onclick="testBasicConnection()">Test Connection</button>
+            <div id="basicResult"></div>
+        </div>
+
+        <div class="test-section">
+            <h3>Test 2: List All Tables</h3>
+            <button onclick="testListTables()">List Tables</button>
+            <div id="tablesResult"></div>
+        </div>
+
+        <div class="test-section">
+            <h3>Test 3: Query Student Table</h3>
+            <input type="text" id="testRollNumber" placeholder="Enter roll number" style="padding: 8px; margin-right: 10px;">
+            <button onclick="testQueryStudent()">Query Student</button>
+            <div id="studentResult"></div>
+        </div>
+
+        <div class="test-section">
+            <h3>Test 4: Test Authentication Flow</h3>
+            <input type="text" id="authRollNumber" placeholder="Roll number" style="padding: 8px; margin-right: 5px;">
+            <input type="text" id="authUniqueCode" placeholder="Unique code" style="padding: 8px; margin-right: 5px;">
+            <button onclick="testAuthentication()">Test Auth</button>
+            <div id="authResult"></div>
+        </div>
+
+        <div class="test-section">
+            <h3>Connection Details</h3>
+            <div class="info">
+                <strong>REST API URL:</strong><br>
+                <code>https://ep-late-union-bd6zxw2g.apirest.c-8.us-east-2.aws.neon.tech/neondb/rest/v1</code>
+            </div>
+        </div>
+    </div>
+
+    <script src="./neon-config.js"></script>
+    <script>
+        async function testBasicConnection() {
+            const resultDiv = document.getElementById('basicResult');
+            resultDiv.innerHTML = '<div class="info">Testing connection...</div>';
+            
+            try {
+                const { data, error } = await neonClient.query('SELECT NOW() as current_time');
+                
+                if (error) {
+                    resultDiv.innerHTML = `<div class="error"><strong>Error:</strong> ${error}</div>`;
+                } else {
+                    resultDiv.innerHTML = `
+                        <div class="success">
+                            <strong>✅ Connection Successful!</strong><br>
+                            Server Time: ${data[0]?.current_time || 'N/A'}
+                        </div>
+                    `;
+                }
+            } catch (err) {
+                resultDiv.innerHTML = `<div class="error"><strong>Exception:</strong> ${err.message}</div>`;
+            }
+        }
+
+        async function testListTables() {
+            const resultDiv = document.getElementById('tablesResult');
+            resultDiv.innerHTML = '<div class="info">Fetching tables...</div>';
+            
+            try {
+                const sql = `
+                    SELECT table_name 
+                    FROM information_schema.tables 
+                    WHERE table_schema = 'public' 
+                    ORDER BY table_name
+                `;
+                
+                const { data, error } = await neonClient.query(sql);
+                
+                if (error) {
+                    resultDiv.innerHTML = `<div class="error"><strong>Error:</strong> ${error}</div>`;
+                } else if (!data || data.length === 0) {
+                    resultDiv.innerHTML = '<div class="error">No tables found. Please run CREATE_*.sql scripts first.</div>';
+                } else {
+                    const tableList = data.map(row => row.table_name).join(', ');
+                    resultDiv.innerHTML = `
+                        <div class="success">
+                            <strong>✅ Found ${data.length} tables:</strong><br>
+                            <pre>${tableList}</pre>
+                        </div>
+                    `;
+                }
+            } catch (err) {
+                resultDiv.innerHTML = `<div class="error"><strong>Exception:</strong> ${err.message}</div>`;
+            }
+        }
+
+        async function testQueryStudent() {
+            const resultDiv = document.getElementById('studentResult');
+            const rollNumber = document.getElementById('testRollNumber').value;
+            
+            if (!rollNumber) {
+                resultDiv.innerHTML = '<div class="error">Please enter a roll number</div>';
+                return;
+            }
+            
+            resultDiv.innerHTML = '<div class="info">Querying student...</div>';
+            
+            try {
+                const { data, error } = await neonClient
+                    .from('students')
+                    .select('*')
+                    .eq('roll_number', rollNumber)
+                    .execute();
+                
+                if (error) {
+                    resultDiv.innerHTML = `<div class="error"><strong>Error:</strong> ${error}</div>`;
+                } else if (!data || data.length === 0) {
+                    resultDiv.innerHTML = '<div class="error">Student not found</div>';
+                } else {
+                    resultDiv.innerHTML = `
+                        <div class="success">
+                            <strong>✅ Student Found:</strong><br>
+                            <pre>${JSON.stringify(data, null, 2)}</pre>
+                        </div>
+                    `;
+                }
+            } catch (err) {
+                resultDiv.innerHTML = `<div class="error"><strong>Exception:</strong> ${err.message}</div>`;
+            }
+        }
+
+        async function testAuthentication() {
+            const resultDiv = document.getElementById('authResult');
+            const rollNumber = document.getElementById('authRollNumber').value;
+            const uniqueCode = document.getElementById('authUniqueCode').value;
+            
+            if (!rollNumber || !uniqueCode) {
+                resultDiv.innerHTML = '<div class="error">Please enter both roll number and unique code</div>';
+                return;
+            }
+            
+            resultDiv.innerHTML = '<div class="info">Testing authentication...</div>';
+            
+            try {
+                const result = await validateCredentials(rollNumber, uniqueCode);
+                
+                if (result.valid) {
+                    resultDiv.innerHTML = `
+                        <div class="success">
+                            <strong>✅ Authentication Successful!</strong><br>
+                            Exam Type: ${result.examType}<br>
+                            <pre>${JSON.stringify(result.student || {}, null, 2)}</pre>
+                        </div>
+                    `;
+                } else {
+                    resultDiv.innerHTML = `
+                        <div class="error">
+                            <strong>❌ Authentication Failed</strong><br>
+                            ${result.error}
+                        </div>
+                    `;
+                }
+            } catch (err) {
+                resultDiv.innerHTML = `<div class="error"><strong>Exception:</strong> ${err.message}</div>`;
+            }
+        }
+
+        // Auto-test connection on page load
+        window.addEventListener('load', () => {
+            console.log('Neon client initialized:', neonClient.isInitialized);
+            testBasicConnection();
+        });
+    </script>
+</body>
+</html>
