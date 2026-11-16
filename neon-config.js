@@ -540,11 +540,14 @@ async function deactivateSession(rollNumber, uniqueCode) {
 // Verification system - mark student as verified when they login
 async function markStudentVerified(rollNumber, uniqueCode) {
     if (!neonClient.isInitialized) {
+        console.log('❌ Database not initialized for verification');
         return { success: false, error: 'Database not available' };
     }
     
     try {
-        // First check if credentials match
+        console.log('🔍 Checking verification for:', rollNumber, uniqueCode);
+        
+        // First check if credentials match in verification table
         const checkResult = await neonClient
             .from('student_verification')
             .select('*')
@@ -553,9 +556,18 @@ async function markStudentVerified(rollNumber, uniqueCode) {
             .single()
             .execute();
         
-        if (checkResult.error || !checkResult.data) {
-            return { success: false, error: 'Invalid credentials' };
+        if (checkResult.error) {
+            console.log('⚠️ Verification table check failed:', checkResult.error);
+            // Don't fail - verification table might not exist yet
+            return { success: false, error: 'Verification table not found', silent: true };
         }
+        
+        if (!checkResult.data) {
+            console.log('⚠️ Credentials not found in verification table');
+            return { success: false, error: 'Credentials not in verification table', silent: true };
+        }
+        
+        console.log('✅ Found in verification table, updating...');
         
         // Update to mark as verified
         const updateSql = `
@@ -569,13 +581,17 @@ async function markStudentVerified(rollNumber, uniqueCode) {
         const result = await neonClient.query(updateSql);
         
         if (result.error) {
+            console.log('❌ Update failed:', result.error);
             return { success: false, error: result.error };
         }
         
+        console.log('✅ VERIFICATION MARKED IN DATABASE!');
+        console.log('✅ Roll:', rollNumber, '| Status: Verified');
+        
         return { success: true, verified: true };
     } catch (err) {
-        console.error('Error marking student verified:', err);
-        return { success: false, error: err.message };
+        console.error('❌ Error marking student verified:', err);
+        return { success: false, error: err.message, silent: true };
     }
 }
 
