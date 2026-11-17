@@ -14,12 +14,18 @@ app.use(cors());
 app.use(express.json());
 app.use(express.static('.')); // Serve static files (HTML, CSS, JS)
 
-// Create PostgreSQL connection pool
+// Create PostgreSQL connection pool with limits for production
 const pool = new Pool({
     connectionString: process.env.DATABASE_URL,
     ssl: {
         rejectUnauthorized: false
-    }
+    },
+    // Connection pool configuration for handling high concurrency
+    max: 20, // Maximum number of clients in the pool
+    min: 2, // Minimum number of clients to maintain
+    idleTimeoutMillis: 30000, // Close idle clients after 30s
+    connectionTimeoutMillis: 10000, // Wait 10s for connection
+    maxUses: 7500 // Recycle connections after 7500 queries
 });
 
 // Test database connection on startup
