@@ -178,3 +178,49 @@ const dbClient = new DBClient();
 if (typeof window !== 'undefined') {
     window.dbClient = dbClient;
 }
+
+// Create validateCredentials function for backward compatibility
+async function validateCredentials(rollNumber, uniqueCode) {
+    console.log('🔍 Validating credentials:', rollNumber, uniqueCode);
+    
+    // Try student_verification table first
+    const result = await dbClient.validateStudent(rollNumber, uniqueCode, 'student_verification');
+    
+    if (result.valid) {
+        return {
+            valid: true,
+            error: null,
+            student: result.student,
+            examType: { type: 'TEST', studentsTable: 'student_verification', resultsTable: 'exam_results' }
+        };
+    }
+    
+    // Try students table
+    const result2 = await dbClient.validateStudent(rollNumber, uniqueCode, 'students');
+    
+    if (result2.valid) {
+        return {
+            valid: true,
+            error: null,
+            student: result2.student,
+            examType: { type: 'TEST', studentsTable: 'students', resultsTable: 'exam_results' }
+        };
+    }
+    
+    return {
+        valid: false,
+        error: 'Invalid roll number or unique code. Please check your credentials.'
+    };
+}
+
+// Create markStudentVerified function
+async function markStudentVerified(rollNumber, uniqueCode) {
+    return await dbClient.markVerified(rollNumber, uniqueCode);
+}
+
+// Export functions globally
+if (typeof window !== 'undefined') {
+    window.validateCredentials = validateCredentials;
+    window.markStudentVerified = markStudentVerified;
+}
+
