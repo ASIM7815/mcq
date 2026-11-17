@@ -86,6 +86,28 @@ document.getElementById('loginForm').addEventListener('submit', async (e) => {
         const data = await response.json();
         
         if (data.success && data.valid) {
+            // Check if student has already submitted exam for this subject
+            const checkExamResponse = await fetch('/api/db-query', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    query: `SELECT * FROM ${subjectConfig.resultsTable} WHERE roll_number = $1 LIMIT 1`,
+                    params: [rollNumber]
+                })
+            });
+            
+            const examData = await checkExamResponse.json();
+            
+            if (examData.success && examData.rows && examData.rows.length > 0) {
+                // Student has already submitted exam
+                hideLoading();
+                alert(`You have already submitted this exam!\n\nYour Result:\nMarks: ${examData.rows[0].marks}/5\nPercentage: ${examData.rows[0].percentage}%\nCorrect: ${examData.rows[0].correct_answers}\nWrong: ${examData.rows[0].wrong_answers}\n\nYou cannot take the exam again.`);
+                return;
+            }
+            
+            // Student hasn't taken exam yet - proceed
             currentStudent = {
                 rollNumber: rollNumber,
                 uniqueCode: uniqueCode
