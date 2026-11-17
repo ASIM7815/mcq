@@ -12,6 +12,12 @@ let userAnswers = [];
 let examStarted = false;
 let violationDetected = false;
 let violationType = null;
+let currentSubject = null; // Track which subject (DM or DSA)
+let subjectConfig = {
+    tableName: '',
+    resultsTable: '',
+    questionBank: []
+};
 
 // ============================================
 // DOM ELEMENTS
@@ -41,6 +47,23 @@ document.getElementById('loginForm').addEventListener('submit', async (e) => {
     
     showLoading();
     
+    // Detect subject based on unique code
+    if (uniqueCode.toLowerCase() === 'dm771') {
+        currentSubject = 'DM';
+        subjectConfig.tableName = '"2ndyearstudentscse"';
+        subjectConfig.resultsTable = '"2ndyearstudentscseresults"';
+        subjectConfig.questionBank = dmQuestions;
+    } else if (uniqueCode.toLowerCase() === 'dsa771') {
+        currentSubject = 'DSA';
+        subjectConfig.tableName = '"2ndcsedsa"';
+        subjectConfig.resultsTable = '"2nddsaresults"';
+        subjectConfig.questionBank = dsaQuestions;
+    } else {
+        hideLoading();
+        alert('Invalid unique code! Please check and try again.');
+        return;
+    }
+    
     try {
         // Validate credentials using API
         const response = await fetch('/api/validate-student', {
@@ -51,7 +74,7 @@ document.getElementById('loginForm').addEventListener('submit', async (e) => {
             body: JSON.stringify({
                 rollNumber: rollNumber,
                 uniqueCode: uniqueCode,
-                tableName: '"2ndyearstudentscse"'
+                tableName: subjectConfig.tableName
             })
         });
         
@@ -70,7 +93,7 @@ document.getElementById('loginForm').addEventListener('submit', async (e) => {
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({
-                    query: `UPDATE "2ndyearstudentscse" SET verified_at = NOW() WHERE roll_number = $1`,
+                    query: `UPDATE ${subjectConfig.tableName} SET verified_at = NOW() WHERE roll_number = $1`,
                     params: [rollNumber]
                 })
             });
@@ -138,8 +161,8 @@ document.getElementById('startExamBtn').addEventListener('click', async () => {
 function initializeExam() {
     examStarted = true;
     
-    // Select 10 random questions from 50
-    examQuestions = getRandomQuestions(dmQuestions, 10);
+    // Select 10 random questions from the subject's question bank
+    examQuestions = getRandomQuestions(subjectConfig.questionBank, 10);
     userAnswers = new Array(10).fill(null);
     currentQuestionIndex = 0;
     
@@ -312,7 +335,7 @@ async function submitExam(isViolation = false) {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
-                tableName: '"2ndyearstudentscseresults"',
+                tableName: subjectConfig.resultsTable,
                 rollNumber: currentStudent.rollNumber,
                 correctAnswers: correctAnswers,
                 wrongAnswers: wrongAnswers,
@@ -449,4 +472,6 @@ function showViolationModal(message) {
 // ============================================
 
 console.log('✅ Exam Portal Loaded');
-console.log('📚 Questions Available:', dmQuestions.length);
+console.log('📚 DM Questions Available:', typeof dmQuestions !== 'undefined' ? dmQuestions.length : 0);
+console.log('📚 DSA Questions Available:', typeof dsaQuestions !== 'undefined' ? dsaQuestions.length : 0);
+console.log('🎓 System Ready!');
