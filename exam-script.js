@@ -318,12 +318,30 @@ document.getElementById('nextBtn').addEventListener('click', () => {
 document.getElementById('submitBtn').addEventListener('click', () => {
     const unanswered = userAnswers.filter(a => a === null).length;
     
+    // Show submit confirmation modal
+    const submitModal = document.getElementById('submitModal');
+    const submitMessage = document.getElementById('submitMessage');
+    const unansweredInfo = document.getElementById('unansweredInfo');
+    
     if (unanswered > 0) {
-        if (!confirm(`You have ${unanswered} unanswered question(s). Do you want to submit anyway?`)) {
-            return;
-        }
+        submitMessage.textContent = `You have ${unanswered} unanswered question(s).`;
+        unansweredInfo.textContent = 'Are you sure you want to submit?';
+    } else {
+        submitMessage.textContent = 'All questions answered!';
+        unansweredInfo.textContent = 'Ready to submit your exam?';
     }
     
+    submitModal.classList.add('active');
+});
+
+// Cancel submit button
+document.getElementById('cancelSubmitBtn').addEventListener('click', () => {
+    document.getElementById('submitModal').classList.remove('active');
+});
+
+// Confirm submit button
+document.getElementById('confirmSubmitBtn').addEventListener('click', () => {
+    document.getElementById('submitModal').classList.remove('active');
     submitExam(false);
 });
 
