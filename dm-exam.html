@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Discrete Mathematics Exam - ISL Engineering College</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        /* Math-friendly styling */
+        .question-text {
+            font-size: 1.1em;
+            line-height: 1.8;
+            font-family: 'Georgia', serif;
+        }
+        
+        .option-label {
+            font-size: 1.05em;
+            font-family: 'Georgia', serif;
+            line-height: 1.6;
+        }
+
+        .math-expr {
+            font-family: 'Cambria Math', 'Times New Roman', serif;
+            font-style: italic;
+        }
+
+        .fraction {
+            display: inline-block;
+            vertical-align: middle;
+            text-align: center;
+        }
+
+        .fraction .numerator {
+            display: block;
+            border-bottom: 1px solid #333;
+            padding-bottom: 2px;
+        }
+
+        .fraction .denominator {
+            display: block;
+            padding-top: 2px;
+        }
+
+        .superscript {
+            vertical-align: super;
+            font-size: 0.8em;
+        }
+
+        .subscript {
+            vertical-align: sub;
+            font-size: 0.8em;
+        }
+
+        #exam-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        #question-counter {
+            background: white;
+            color: #667eea;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-weight: bold;
+            display: inline-block;
+            margin-top: 0.5rem;
+        }
+
+        .result-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 2rem;
+            border-radius: 15px;
+            text-align: center;
+            margin-top: 2rem;
+        }
+
+        .result-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .stat-box {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 1rem;
+            border-radius: 10px;
+            backdrop-filter: blur(10px);
+        }
+
+        .stat-value {
+            font-size: 2em;
+            font-weight: bold;
+            display: block;
+            margin: 0.5rem 0;
+        }
+
+        .stat-label {
+            font-size: 0.9em;
+            opacity: 0.9;
+        }
+
+        .marks-highlight {
+            font-size: 3em;
+            font-weight: bold;
+            margin: 1rem 0;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="college-name">ISL ENGINEERING COLLEGE</h1>
+        
+        <!-- Login Screen -->
+        <div id="loginScreen" class="login-container">
+            <h2>Discrete Mathematics Exam</h2>
+            <p style="color: #666; margin-bottom: 1.5rem;">2nd Year CSE Students</p>
+            
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="rollNumber">Student Roll Number</label>
+                    <input 
+                        type="text" 
+                        id="rollNumber" 
+                        placeholder="Enter your roll number"
+                        required
+                    >
+                </div>
+                
+                <div class="form-group">
+                    <label for="uniqueCode">Unique Code</label>
+                    <input 
+                        type="text" 
+                        id="uniqueCode" 
+                        placeholder="Enter unique code (dm771)"
+                        required
+                    >
+                </div>
+                
+                <button type="submit" class="btn-primary">CONTINUE</button>
+            </form>
+        </div>
+
+        <!-- Exam Screen -->
+        <div id="examScreen" class="exam-container" style="display: none;">
+            <div id="exam-header">
+                <h2 style="margin: 0;">Discrete Mathematics Exam</h2>
+                <p style="margin: 0.5rem 0; opacity: 0.9;">Total Questions: 10 | Maximum Marks: 5</p>
+                <div id="question-counter">Question 1 of 10</div>
+            </div>
+
+            <div id="questionContainer"></div>
+            
+            <div class="navigation-buttons">
+                <button id="prevBtn" class="btn-secondary" style="display: none;">Previous</button>
+                <button id="nextBtn" class="btn-primary">Next</button>
+                <button id="submitBtn" class="btn-success" style="display: none;">Submit Exam</button>
+            </div>
+        </div>
+
+        <!-- Result Screen -->
+        <div id="resultScreen" class="result-container" style="display: none;">
+            <div class="result-card">
+                <h2 style="margin: 0;">📊 Exam Results</h2>
+                <p id="studentInfo" style="margin: 1rem 0; opacity: 0.9;"></p>
+                
+                <div class="marks-highlight" id="marksDisplay">0 / 5</div>
+                
+                <div class="result-stats">
+                    <div class="stat-box">
+                        <span class="stat-label">Correct Answers</span>
+                        <span class="stat-value" id="correctCount">0</span>
+                    </div>
+                    <div class="stat-box">
+                        <span class="stat-label">Wrong Answers</span>
+                        <span class="stat-value" id="wrongCount">0</span>
+                    </div>
+                    <div class="stat-box">
+                        <span class="stat-label">Percentage</span>
+                        <span class="stat-value" id="percentageDisplay">0%</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Load MathJax for better math rendering -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.min.js"></script>
+    
+    <!-- Load question bank -->
+    <script src="dm-questions.js"></script>
+    
+    <!-- Load database client -->
+    <script src="db-client.js"></script>
+    
+    <!-- Main exam logic -->
+    <script src="dm-exam.js"></script>
+</body>
+</html>

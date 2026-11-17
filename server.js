@@ -130,7 +130,7 @@ app.post('/api/validate-student', async (req, res) => {
     }
 });
 
-// Save exam results
+// Save exam results (with marks calculation for DM exam)
 app.post('/api/save-results', async (req, res) => {
     const {
         tableName,
@@ -138,6 +138,7 @@ app.post('/api/save-results', async (req, res) => {
         correctAnswers,
         wrongAnswers,
         totalQuestions,
+        marks,
         percentage,
         userAnswers,
         violationDetected = false,
@@ -152,31 +153,69 @@ app.post('/api/save-results', async (req, res) => {
     }
 
     try {
-        const query = `
-            INSERT INTO ${tableName} (
-                roll_number,
-                correct_answers,
-                wrong_answers,
-                total_questions,
-                percentage,
-                user_answers,
-                violation_detected,
-                violation_type,
-                created_at
-            ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, NOW())
-            RETURNING *
+        // Check if table has 'marks' column (DM exam) or 'percentage' only (old exam)
+        const checkColumnQuery = `
+            SELECT column_name 
+            FROM information_schema.columns 
+            WHERE table_name = '${tableName.replace(/"/g, '')}' 
+            AND column_name = 'marks'
         `;
+        const columnCheck = await pool.query(checkColumnQuery);
+        const hasMarksColumn = columnCheck.rows.length > 0;
 
-        const values = [
-            rollNumber,
-            correctAnswers,
-            wrongAnswers,
-            totalQuestions,
-            percentage,
-            JSON.stringify(userAnswers),
-            violationDetected,
-            violationType
-        ];
+        let query, values;
+
+        if (hasMarksColumn) {
+            // New DM exam table with marks column
+            query = `
+                INSERT INTO ${tableName} (
+                    roll_number,
+                    correct_answers,
+                    wrong_answers,
+                    total_questions,
+                    marks,
+                    percentage,
+                    user_answers,
+                    created_at
+                ) VALUES ($1, $2, $3, $4, $5, $6, $7, NOW())
+                RETURNING *
+            `;
+            values = [
+                rollNumber,
+                correctAnswers,
+                wrongAnswers,
+                totalQuestions,
+                marks,
+                percentage,
+                JSON.stringify(userAnswers)
+            ];
+        } else {
+            // Old table structure
+            query = `
+                INSERT INTO ${tableName} (
+                    roll_number,
+                    correct_answers,
+                    wrong_answers,
+                    total_questions,
+                    percentage,
+                    user_answers,
+                    violation_detected,
+                    violation_type,
+                    created_at
+                ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, NOW())
+                RETURNING *
+            `;
+            values = [
+                rollNumber,
+                correctAnswers,
+                wrongAnswers,
+                totalQuestions,
+                percentage,
+                JSON.stringify(userAnswers),
+                violationDetected,
+                violationType
+            ];
+        }
 
         const result = await pool.query(query, values);
         
