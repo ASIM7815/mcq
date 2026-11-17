@@ -58,6 +58,11 @@ document.getElementById('loginForm').addEventListener('submit', async (e) => {
         subjectConfig.tableName = '"2ndcsedsa"';
         subjectConfig.resultsTable = '"2nddsaresults"';
         subjectConfig.questionBank = dsaQuestions;
+    } else if (uniqueCode.toLowerCase() === 'alc771') {
+        currentSubject = 'ALC';
+        subjectConfig.tableName = '"3rdcsealc"';
+        subjectConfig.resultsTable = '"3rdcsealcresults"';
+        subjectConfig.questionBank = alcQuestions;
     } else {
         hideLoading();
         alert('Invalid unique code! Please check and try again.');
@@ -474,4 +479,5 @@ function showViolationModal(message) {
 console.log('✅ Exam Portal Loaded');
 console.log('📚 DM Questions Available:', typeof dmQuestions !== 'undefined' ? dmQuestions.length : 0);
 console.log('📚 DSA Questions Available:', typeof dsaQuestions !== 'undefined' ? dsaQuestions.length : 0);
+console.log('📚 ALC Questions Available:', typeof alcQuestions !== 'undefined' ? alcQuestions.length : 0);
 console.log('🎓 System Ready!');
