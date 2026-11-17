@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Direct Test</title>
+</head>
+<body>
+    <h1>Testing Database Connection</h1>
+    <button onclick="testLogin()">Test Login</button>
+    <div id="result"></div>
+
+    <script src="./db-client.js"></script>
+    <script>
+        async function testLogin() {
+            console.log('Testing login...');
+            const result = await validateCredentials('12345678', '123');
+            console.log('Result:', result);
+            document.getElementById('result').innerHTML = JSON.stringify(result, null, 2);
+        }
+        
+        // Auto test on load
+        setTimeout(() => {
+            console.log('Auto-testing...');
+            console.log('dbClient available:', typeof dbClient);
+            console.log('validateCredentials available:', typeof validateCredentials);
+        }, 1000);
+    </script>
+</body>
+</html>
