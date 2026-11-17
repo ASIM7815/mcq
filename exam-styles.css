@@ -1,0 +1,583 @@
+/* Modern Exam Portal Styles - Mobile Responsive */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+:root {
+    --primary-color: #4f46e5;
+    --primary-hover: #4338ca;
+    --success-color: #10b981;
+    --success-hover: #059669;
+    --danger-color: #ef4444;
+    --warning-color: #f59e0b;
+    --secondary-color: #6b7280;
+    --text-dark: #1f2937;
+    --text-light: #6b7280;
+    --bg-light: #f9fafb;
+    --bg-white: #ffffff;
+    --border-color: #e5e7eb;
+    --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.1);
+    --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
+    --shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.1);
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    color: var(--text-dark);
+    -webkit-font-smoothing: antialiased;
+}
+
+/* Screen Management */
+.screen {
+    display: none;
+    min-height: 100vh;
+    padding: 20px;
+}
+
+.screen.active {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Container */
+.container {
+    width: 100%;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+/* College Header */
+.college-header {
+    text-align: center;
+    margin-bottom: 30px;
+    color: var(--bg-white);
+}
+
+.college-header h1 {
+    font-size: 28px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    margin-bottom: 8px;
+}
+
+.subtitle {
+    font-size: 14px;
+    opacity: 0.9;
+}
+
+/* Card Styles */
+.card {
+    background: var(--bg-white);
+    border-radius: 16px;
+    padding: 40px;
+    box-shadow: var(--shadow-lg);
+}
+
+.card h2 {
+    color: var(--text-dark);
+    font-size: 24px;
+    margin-bottom: 30px;
+    text-align: center;
+}
+
+/* Login Card */
+.login-card {
+    max-width: 450px;
+    margin: 0 auto;
+}
+
+/* Form Styles */
+.form-group {
+    margin-bottom: 24px;
+}
+
+.form-group label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: var(--text-dark);
+    font-size: 14px;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 14px 16px;
+    border: 2px solid var(--border-color);
+    border-radius: 8px;
+    font-size: 16px;
+    transition: all 0.3s;
+}
+
+.form-group input:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+}
+
+/* Button Styles */
+.btn {
+    padding: 14px 28px;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.btn-primary {
+    background: var(--primary-color);
+    color: white;
+    width: 100%;
+}
+
+.btn-primary:hover {
+    background: var(--primary-hover);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+}
+
+.btn-success {
+    background: var(--success-color);
+    color: white;
+}
+
+.btn-success:hover {
+    background: var(--success-hover);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+}
+
+.btn-secondary {
+    background: var(--secondary-color);
+    color: white;
+}
+
+.btn-secondary:hover {
+    background: #4b5563;
+}
+
+.btn-secondary:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.btn-large {
+    padding: 18px 36px;
+    font-size: 18px;
+}
+
+/* Rules Card */
+.rules-card {
+    max-width: 700px;
+    margin: 0 auto;
+}
+
+.rules-content {
+    margin: 30px 0;
+}
+
+.rule-item {
+    display: flex;
+    gap: 15px;
+    padding: 20px;
+    margin-bottom: 16px;
+    border-radius: 12px;
+    background: var(--bg-light);
+    border-left: 4px solid var(--primary-color);
+}
+
+.rule-item.important {
+    background: #fef2f2;
+    border-left-color: var(--danger-color);
+}
+
+.rule-item.warning {
+    background: #fffbeb;
+    border-left-color: var(--warning-color);
+}
+
+.rule-icon {
+    font-size: 24px;
+    flex-shrink: 0;
+}
+
+.rule-item ul {
+    margin-top: 8px;
+    padding-left: 20px;
+}
+
+.rule-item li {
+    margin-bottom: 6px;
+}
+
+.rules-footer {
+    text-align: center;
+    margin-top: 30px;
+    padding-top: 30px;
+    border-top: 2px solid var(--border-color);
+}
+
+.rules-footer p {
+    color: var(--text-light);
+    margin-bottom: 20px;
+    font-size: 14px;
+}
+
+/* Exam Screen */
+#examScreen {
+    display: none;
+    flex-direction: column;
+    padding: 0;
+    background: var(--bg-light);
+}
+
+#examScreen.active {
+    display: flex;
+}
+
+.exam-topbar {
+    background: var(--bg-white);
+    padding: 16px 24px;
+    box-shadow: var(--shadow-sm);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.exam-info {
+    display: flex;
+    gap: 20px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.college-name-small {
+    font-weight: 700;
+    color: var(--primary-color);
+    font-size: 14px;
+}
+
+.roll-display {
+    font-size: 14px;
+    color: var(--text-light);
+}
+
+.question-progress {
+    font-weight: 600;
+    color: var(--text-dark);
+    background: var(--bg-light);
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 14px;
+}
+
+.exam-container {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    max-width: 900px;
+    width: 100%;
+    margin: 0 auto;
+    padding: 30px 20px;
+}
+
+.question-card {
+    background: var(--bg-white);
+    border-radius: 16px;
+    padding: 40px;
+    box-shadow: var(--shadow-md);
+    flex: 1;
+}
+
+.question-text {
+    font-size: 18px;
+    line-height: 1.8;
+    color: var(--text-dark);
+    margin-bottom: 32px;
+    font-weight: 500;
+}
+
+.options-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.option-item {
+    display: flex;
+    align-items: center;
+    padding: 18px 20px;
+    border: 2px solid var(--border-color);
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.3s;
+    background: var(--bg-white);
+}
+
+.option-item:hover {
+    border-color: var(--primary-color);
+    background: #f5f3ff;
+}
+
+.option-item.selected {
+    border-color: var(--primary-color);
+    background: #eef2ff;
+    box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+}
+
+.option-item input[type="radio"] {
+    width: 20px;
+    height: 20px;
+    margin-right: 16px;
+    cursor: pointer;
+}
+
+.option-label {
+    font-size: 16px;
+    line-height: 1.6;
+    cursor: pointer;
+    flex: 1;
+}
+
+.exam-controls {
+    display: flex;
+    gap: 16px;
+    margin-top: 30px;
+    flex-wrap: wrap;
+}
+
+.exam-controls .btn {
+    flex: 1;
+    min-width: 140px;
+}
+
+/* Results Screen */
+.results-card {
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.results-header {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.roll-result {
+    color: var(--text-light);
+    margin-top: 8px;
+    font-size: 16px;
+}
+
+.marks-display {
+    text-align: center;
+    padding: 40px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 16px;
+    margin-bottom: 30px;
+}
+
+.marks-label {
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 16px;
+    margin-bottom: 12px;
+}
+
+.marks-value {
+    color: white;
+    font-size: 48px;
+    font-weight: 700;
+}
+
+.results-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 20px;
+}
+
+.result-box {
+    text-align: center;
+    padding: 24px;
+    background: var(--bg-light);
+    border-radius: 12px;
+}
+
+.result-label {
+    font-size: 14px;
+    color: var(--text-light);
+    margin-bottom: 8px;
+}
+
+.result-value {
+    font-size: 32px;
+    font-weight: 700;
+    color: var(--text-dark);
+}
+
+.result-value.correct {
+    color: var(--success-color);
+}
+
+.result-value.wrong {
+    color: var(--danger-color);
+}
+
+/* Modal Styles */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    z-index: 10000;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal.active {
+    display: flex;
+}
+
+.modal-content {
+    background: var(--bg-white);
+    padding: 40px;
+    border-radius: 16px;
+    max-width: 500px;
+    width: 90%;
+    box-shadow: var(--shadow-lg);
+    text-align: center;
+}
+
+.modal-content h3 {
+    color: var(--text-dark);
+    margin-bottom: 20px;
+    font-size: 24px;
+}
+
+.modal-content p {
+    color: var(--text-light);
+    line-height: 1.6;
+    margin-bottom: 16px;
+}
+
+.modal-warning {
+    border-top: 4px solid var(--danger-color);
+}
+
+.modal-warning-text {
+    color: var(--danger-color);
+    font-weight: 600;
+}
+
+/* Loading Overlay */
+.loading-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    z-index: 9999;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+}
+
+.loading-overlay.active {
+    display: flex;
+}
+
+.spinner {
+    width: 50px;
+    height: 50px;
+    border: 4px solid rgba(255, 255, 255, 0.3);
+    border-top-color: white;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+.loading-overlay p {
+    color: white;
+    margin-top: 20px;
+    font-size: 16px;
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+    .card {
+        padding: 24px;
+    }
+    
+    .college-header h1 {
+        font-size: 22px;
+    }
+    
+    .question-card {
+        padding: 24px;
+    }
+    
+    .question-text {
+        font-size: 16px;
+    }
+    
+    .marks-value {
+        font-size: 36px;
+    }
+    
+    .exam-controls {
+        flex-direction: column;
+    }
+    
+    .exam-controls .btn {
+        width: 100%;
+    }
+    
+    .exam-topbar {
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    .exam-info {
+        justify-content: center;
+    }
+}
+
+@media (max-width: 480px) {
+    .screen {
+        padding: 12px;
+    }
+    
+    .card {
+        padding: 20px;
+    }
+    
+    .college-header h1 {
+        font-size: 20px;
+    }
+    
+    .option-item {
+        padding: 14px 16px;
+    }
+    
+    .result-value {
+        font-size: 24px;
+    }
+}
