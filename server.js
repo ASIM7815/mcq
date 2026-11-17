@@ -232,9 +232,9 @@ app.post('/api/save-results', async (req, res) => {
     }
 });
 
-// Update verification status
+// Update verification status (supports dynamic table names)
 app.post('/api/update-verification', async (req, res) => {
-    const { rollNumber, uniqueCode } = req.body;
+    const { rollNumber, uniqueCode, tableName } = req.body;
 
     if (!rollNumber || !uniqueCode) {
         return res.status(400).json({
@@ -243,10 +243,13 @@ app.post('/api/update-verification', async (req, res) => {
         });
     }
 
+    // Default to old table name for backward compatibility
+    const verificationTable = tableName || 'student_verification';
+
     try {
         // Check if student exists in verification table
         const checkQuery = `
-            SELECT * FROM student_verification 
+            SELECT * FROM ${verificationTable} 
             WHERE roll_number = $1 AND unique_code = $2
         `;
         const checkResult = await pool.query(checkQuery, [rollNumber, uniqueCode]);
@@ -258,11 +261,10 @@ app.post('/api/update-verification', async (req, res) => {
             });
         }
 
-        // Update verification status
+        // Update verification status (only if verified_text column exists)
         const updateQuery = `
-            UPDATE student_verification 
-            SET verified_text = 'Verified', 
-                verified_at = NOW() 
+            UPDATE ${verificationTable} 
+            SET verified_at = NOW() 
             WHERE roll_number = $1 AND unique_code = $2
             RETURNING *
         `;
