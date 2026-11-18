@@ -35,6 +35,13 @@ SET is_active = TRUE
 WHERE is_active = FALSE;
 
 -- ============================================
+-- ENABLE IT PYTHON (Already active, but just in case)
+-- ============================================
+UPDATE "2nditpython" 
+SET is_active = TRUE
+WHERE is_active = FALSE;
+
+-- ============================================
 -- ENABLE IT ALC (Already active, but just in case)
 -- ============================================
 UPDATE "3rditalc" 
@@ -88,6 +95,14 @@ SELECT
     COUNT(*) as total_students,
     SUM(CASE WHEN is_active = TRUE THEN 1 ELSE 0 END) as active_students
 FROM "3rdcsese"
+
+UNION ALL
+
+SELECT 
+    '2nditpython (IT Python)' as table_name,
+    COUNT(*) as total_students,
+    SUM(CASE WHEN is_active = TRUE THEN 1 ELSE 0 END) as active_students
+FROM "2nditpython"
 
 UNION ALL
 
