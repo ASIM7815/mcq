@@ -481,10 +481,12 @@ body::before {
     z-index: 10000;
     align-items: center;
     justify-content: center;
+    pointer-events: auto;
 }
 
 .modal.active {
     display: flex;
+    pointer-events: auto;
 }
 
 .modal-content {
@@ -495,6 +497,9 @@ body::before {
     width: 90%;
     box-shadow: var(--shadow-lg);
     text-align: center;
+    pointer-events: auto;
+    position: relative;
+    z-index: 10001;
 }
 
 .modal-content h3 {
@@ -558,6 +563,33 @@ body::before {
     font-size: 16px;
     color: var(--text-light);
     font-weight: 600;
+}
+
+.btn-pulse {
+    animation: btnPulse 1.5s ease-in-out infinite;
+    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
+}
+
+@keyframes btnPulse {
+    0% {
+        box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
+    }
+    50% {
+        box-shadow: 0 0 0 15px rgba(16, 185, 129, 0);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(16, 185, 129, 0);
+    }
+}
+
+.modal-countdown .btn-large {
+    width: 100%;
+    padding: 20px;
+    font-size: 20px;
+    font-weight: 700;
+    margin-top: 10px;
+    cursor: pointer;
+    pointer-events: auto;
 }
 
 .modal-info-text {

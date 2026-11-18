@@ -431,6 +431,8 @@ document.getElementById('confirmExitBtn').addEventListener('click', () => {
 
 // Countdown modal continue button handler
 document.getElementById('continueExamBtn').addEventListener('click', async () => {
+    console.log('🟢 Continue button clicked!');
+    
     // Clear timers
     if (appSwitchTimer) {
         clearTimeout(appSwitchTimer);
@@ -443,6 +445,8 @@ document.getElementById('continueExamBtn').addEventListener('click', async () =>
     
     gracePeriodActive = false;
     hideCountdownModal();
+    
+    console.log('🔄 Attempting to re-enter fullscreen...');
     
     // Re-enter fullscreen and continue
     await reenterFullscreenAndContinue();
