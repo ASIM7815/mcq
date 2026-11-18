@@ -113,6 +113,11 @@ document.getElementById('loginForm').addEventListener('submit', async (e) => {
         subjectConfig.tableName = '"2ndecede"';
         subjectConfig.resultsTable = '"2ndecederesults"';
         subjectConfig.questionBank = deQuestions;
+    } else if (uniqueCode.toLowerCase() === 'signal771') {
+        currentSubject = '2nd ECE Signals';
+        subjectConfig.tableName = '"2ndecesignal"';
+        subjectConfig.resultsTable = '"2ndecesignalresults"';
+        subjectConfig.questionBank = signalsQuestions;
     } else {
         hideLoading();
         alert('Invalid unique code! Please check and try again.');

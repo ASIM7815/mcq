@@ -78,6 +78,11 @@ UPDATE "2ndecede"
 SET is_active = TRUE
 WHERE is_active = FALSE;
 
+-- Enable 2nd ECE Signals (2nd Year ECE)
+UPDATE "2ndecesignal" 
+SET is_active = TRUE
+WHERE is_active = FALSE;
+
 -- ============================================
 -- VERIFY STATUS
 -- ============================================
@@ -182,6 +187,14 @@ SELECT
     COUNT(*) as total_students,
     SUM(CASE WHEN is_active = TRUE THEN 1 ELSE 0 END) as active_students
 FROM "2ndecede"
+
+UNION ALL
+
+SELECT 
+    '2ndecesignal (2nd ECE Signals)' as table_name,
+    COUNT(*) as total_students,
+    SUM(CASE WHEN is_active = TRUE THEN 1 ELSE 0 END) as active_students
+FROM "2ndecesignal"
 
 ORDER BY table_name;
 
