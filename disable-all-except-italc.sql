@@ -42,6 +42,7 @@ WHERE is_active = TRUE;
 -- IT DM (2nditdms) remains ACTIVE - no changes
 -- IT ALC (3rditalc) remains ACTIVE - no changes
 -- IT ML (3rditml) remains ACTIVE - no changes
+-- ECE AWP (3rdeceewp) remains ACTIVE - no changes
 
 -- ============================================
 -- VERIFY STATUS
@@ -125,11 +126,20 @@ SELECT
     SUM(CASE WHEN is_active = FALSE THEN 1 ELSE 0 END) as inactive_students
 FROM "3rditml"
 
+UNION ALL
+
+SELECT 
+    '3rdeceewp (ECE AWP) ✅ ACTIVE' as table_name,
+    COUNT(*) as total_students,
+    SUM(CASE WHEN is_active = TRUE THEN 1 ELSE 0 END) as active_students,
+    SUM(CASE WHEN is_active = FALSE THEN 1 ELSE 0 END) as inactive_students
+FROM "3rdeceewp"
+
 ORDER BY table_name;
 
 -- ============================================
 -- SUMMARY MESSAGE
 -- ============================================
 SELECT 
-    '✅ ALL CSE EXAMS DISABLED - ALL IT EXAMS ACTIVE' as status,
-    'Only IT students (DMS771, PY771, ITALC771, ML771) can login now' as message;
+    '✅ ALL CSE EXAMS DISABLED - IT & ECE EXAMS ACTIVE' as status,
+    'Only IT (DMS771, PY771, ITALC771, ML771) and ECE (EWP771) students can login now' as message;
