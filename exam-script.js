@@ -19,6 +19,12 @@ let subjectConfig = {
     questionBank: []
 };
 
+// Mobile-friendly anti-cheat variables
+let appSwitchTimer = null;
+let gracePeriodActive = false;
+const GRACE_PERIOD_MS = 20000; // 20 seconds
+let isMobile = false;
+
 // ============================================
 // DOM ELEMENTS
 // ============================================
@@ -215,28 +221,45 @@ function hideLoading() {
 }
 
 // ============================================
-// START EXAM WITH FULLSCREEN
+// MOBILE DETECTION
+// ============================================
+
+function isMobileDevice() {
+    return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ||
+           window.innerWidth <= 768;
+}
+
+// ============================================
+// START EXAM WITH FULLSCREEN (Optional on Mobile)
 // ============================================
 
 document.getElementById('startExamBtn').addEventListener('click', async () => {
-    try {
-        // Request fullscreen
-        const elem = document.documentElement;
-        
-        if (elem.requestFullscreen) {
-            await elem.requestFullscreen();
-        } else if (elem.webkitRequestFullscreen) {
-            await elem.webkitRequestFullscreen();
-        } else if (elem.msRequestFullscreen) {
-            await elem.msRequestFullscreen();
+    isMobile = isMobileDevice();
+    
+    if (isMobile) {
+        // On mobile, fullscreen is optional - start exam directly
+        console.log('📱 Mobile device detected - fullscreen optional');
+        initializeExam();
+    } else {
+        // On desktop, require fullscreen
+        try {
+            const elem = document.documentElement;
+            
+            if (elem.requestFullscreen) {
+                await elem.requestFullscreen();
+            } else if (elem.webkitRequestFullscreen) {
+                await elem.webkitRequestFullscreen();
+            } else if (elem.msRequestFullscreen) {
+                await elem.msRequestFullscreen();
+            }
+            
+            // Start exam after fullscreen is activated
+            setTimeout(initializeExam, 500);
+            
+        } catch (error) {
+            alert('Fullscreen is required to start the exam. Please allow fullscreen access.');
+            console.error('Fullscreen error:', error);
         }
-        
-        // Start exam after fullscreen is activated
-        setTimeout(initializeExam, 500);
-        
-    } catch (error) {
-        alert('Fullscreen is required to start the exam. Please allow fullscreen access.');
-        console.error('Fullscreen error:', error);
     }
 });
 
@@ -250,6 +273,9 @@ function initializeExam() {
     
     // Setup anti-cheat monitoring
     setupAntiCheat();
+    
+    // Setup back button handler for mobile
+    setupBackButtonHandler();
     
     // Display exam screen
     document.getElementById('rollDisplay').textContent = `Roll: ${currentStudent.rollNumber}`;
@@ -390,6 +416,16 @@ document.getElementById('confirmSubmitBtn').addEventListener('click', () => {
     submitExam(false);
 });
 
+// Exit confirmation modal handlers
+document.getElementById('cancelExitBtn').addEventListener('click', () => {
+    document.getElementById('exitConfirmModal').classList.remove('active');
+});
+
+document.getElementById('confirmExitBtn').addEventListener('click', () => {
+    document.getElementById('exitConfirmModal').classList.remove('active');
+    submitExam(false);
+});
+
 // ============================================
 // SUBMIT EXAM
 // ============================================
@@ -488,19 +524,48 @@ function displayResults(correct, wrong, marks, percentage) {
 }
 
 // ============================================
-// ANTI-CHEAT SYSTEM
+// BACK BUTTON HANDLER (Mobile)
+// ============================================
+
+function setupBackButtonHandler() {
+    // Push a state to history so back button can be intercepted
+    window.history.pushState({ examPage: true }, '', '');
+    
+    window.addEventListener('popstate', (event) => {
+        if (!examStarted) return;
+        
+        // Push state back to keep user on exam page
+        window.history.pushState({ examPage: true }, '', '');
+        
+        // Show exit confirmation modal
+        showExitConfirmationModal();
+    });
+}
+
+function showExitConfirmationModal() {
+    const exitModal = document.getElementById('exitConfirmModal');
+    if (exitModal) {
+        exitModal.classList.add('active');
+    }
+}
+
+// ============================================
+// ANTI-CHEAT SYSTEM (Mobile-Friendly)
 // ============================================
 
 function setupAntiCheat() {
-    // Monitor fullscreen exit
-    document.addEventListener('fullscreenchange', handleFullscreenChange);
-    document.addEventListener('webkitfullscreenchange', handleFullscreenChange);
+    // Monitor fullscreen exit (only on desktop)
+    if (!isMobile) {
+        document.addEventListener('fullscreenchange', handleFullscreenChange);
+        document.addEventListener('webkitfullscreenchange', handleFullscreenChange);
+    }
     
-    // Monitor visibility change (tab switching)
+    // Monitor visibility change with grace period (mobile-friendly)
     document.addEventListener('visibilitychange', handleVisibilityChange);
     
-    // Monitor window blur (switching apps)
+    // Monitor window blur with grace period (mobile-friendly)
     window.addEventListener('blur', handleWindowBlur);
+    window.addEventListener('focus', handleWindowFocus);
     
     // Disable context menu
     document.addEventListener('contextmenu', (e) => {
@@ -526,7 +591,7 @@ function handleFullscreenChange() {
     if (!examStarted) return;
     
     if (!document.fullscreenElement && !document.webkitFullscreenElement) {
-        // Fullscreen exited - submit exam
+        // Fullscreen exited - submit exam (desktop only)
         showViolationModal('You exited fullscreen mode.');
         setTimeout(() => {
             violationDetected = true;
@@ -537,29 +602,83 @@ function handleFullscreenChange() {
 }
 
 function handleVisibilityChange() {
-    if (!examStarted) return;
+    if (!examStarted || gracePeriodActive) return;
     
     if (document.hidden) {
-        // Tab switched - submit exam
-        showViolationModal('You switched to another tab.');
-        setTimeout(() => {
-            violationDetected = true;
-            violationType = 'Tab Switch';
-            submitExam(true);
-        }, 2000);
+        console.log('📱 Tab/App switched - Starting 20s grace period');
+        
+        // Start grace period timer
+        gracePeriodActive = true;
+        
+        appSwitchTimer = setTimeout(() => {
+            // Grace period expired without return
+            console.log('⚠️ Grace period expired - Submitting exam');
+            showViolationModal('You were away for too long.');
+            setTimeout(() => {
+                violationDetected = true;
+                violationType = 'Exceeded Grace Period';
+                submitExam(true);
+            }, 2000);
+        }, GRACE_PERIOD_MS);
+    } else {
+        // User returned to tab
+        if (appSwitchTimer && gracePeriodActive) {
+            clearTimeout(appSwitchTimer);
+            appSwitchTimer = null;
+            gracePeriodActive = false;
+            console.log('✅ User returned within grace period');
+            
+            // Show continue exam popup
+            showContinueExamPopup();
+        }
     }
 }
 
 function handleWindowBlur() {
+    if (!examStarted || gracePeriodActive) return;
+    
+    // This could be a notification, call, or intentional app switch
+    // Start grace period instead of instant violation
+    console.log('📱 Window blur detected - Starting grace period');
+    gracePeriodActive = true;
+    
+    appSwitchTimer = setTimeout(() => {
+        // Grace period expired
+        console.log('⚠️ Window blur grace period expired');
+        showViolationModal('You switched away from the exam for too long.');
+        setTimeout(() => {
+            violationDetected = true;
+            violationType = 'App Switch Timeout';
+            submitExam(true);
+        }, 2000);
+    }, GRACE_PERIOD_MS);
+}
+
+function handleWindowFocus() {
     if (!examStarted) return;
     
-    // Window lost focus - submit exam
-    showViolationModal('You switched to another application.');
-    setTimeout(() => {
-        violationDetected = true;
-        violationType = 'App Switch';
-        submitExam(true);
-    }, 2000);
+    // User returned to window
+    if (appSwitchTimer && gracePeriodActive) {
+        clearTimeout(appSwitchTimer);
+        appSwitchTimer = null;
+        gracePeriodActive = false;
+        console.log('✅ User returned to exam window');
+        
+        // Show continue exam popup
+        showContinueExamPopup();
+    }
+}
+
+function showContinueExamPopup() {
+    const continuePopup = document.getElementById('continueExamPopup');
+    if (continuePopup) {
+        continuePopup.classList.add('active');
+        
+        // Auto-hide after 3 seconds
+        setTimeout(() => {
+            continuePopup.classList.remove('active');
+        }, 3000);
+    }
 }
 
 function showViolationModal(message) {

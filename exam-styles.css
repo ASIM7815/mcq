@@ -589,6 +589,67 @@ body::before {
     font-size: 16px;
 }
 
+/* Continue Exam Popup (Mobile-Friendly) */
+.continue-exam-popup {
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    padding: 24px 40px;
+    border-radius: 16px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    z-index: 10001;
+    animation: popupSlideIn 0.3s ease-out;
+}
+
+.continue-exam-popup.active {
+    display: block;
+}
+
+@keyframes popupSlideIn {
+    from {
+        opacity: 0;
+        transform: translate(-50%, -60%);
+    }
+    to {
+        opacity: 1;
+        transform: translate(-50%, -50%);
+    }
+}
+
+.continue-popup-content {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    color: white;
+}
+
+.continue-icon {
+    font-size: 32px;
+}
+
+.continue-popup-content p {
+    font-size: 18px;
+    font-weight: 600;
+    margin: 0;
+}
+
+@media (max-width: 480px) {
+    .continue-exam-popup {
+        padding: 20px 30px;
+    }
+    
+    .continue-popup-content p {
+        font-size: 16px;
+    }
+    
+    .continue-icon {
+        font-size: 28px;
+    }
+}
+
 /* Mobile Responsive */
 @media (max-width: 768px) {
     .card {
