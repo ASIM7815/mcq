@@ -78,6 +78,11 @@ document.getElementById('loginForm').addEventListener('submit', async (e) => {
         subjectConfig.tableName = '"3rditalc"';
         subjectConfig.resultsTable = '"3rditalcresults"';
         subjectConfig.questionBank = italcQuestions;
+    } else if (uniqueCode.toLowerCase() === 'ml771') {
+        currentSubject = 'IT ML';
+        subjectConfig.tableName = '"3rditml"';
+        subjectConfig.resultsTable = '"3rditmlresults"';
+        subjectConfig.questionBank = itmlQuestions;
     } else {
         hideLoading();
         alert('Invalid unique code! Please check and try again.');

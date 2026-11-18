@@ -42,6 +42,13 @@ SET is_active = TRUE
 WHERE is_active = FALSE;
 
 -- ============================================
+-- ENABLE IT ML (Already active, but just in case)
+-- ============================================
+UPDATE "3rditml" 
+SET is_active = TRUE
+WHERE is_active = FALSE;
+
+-- ============================================
 -- VERIFY STATUS
 -- ============================================
 SELECT 
@@ -89,6 +96,14 @@ SELECT
     COUNT(*) as total_students,
     SUM(CASE WHEN is_active = TRUE THEN 1 ELSE 0 END) as active_students
 FROM "3rditalc"
+
+UNION ALL
+
+SELECT 
+    '3rditml (IT ML)' as table_name,
+    COUNT(*) as total_students,
+    SUM(CASE WHEN is_active = TRUE THEN 1 ELSE 0 END) as active_students
+FROM "3rditml"
 
 ORDER BY table_name;
 

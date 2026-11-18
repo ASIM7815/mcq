@@ -36,9 +36,10 @@ SET is_active = FALSE
 WHERE is_active = TRUE;
 
 -- ============================================
--- KEEP IT ALC ACTIVE (DO NOT TOUCH)
+-- KEEP IT ALC AND IT ML ACTIVE (DO NOT TOUCH)
 -- ============================================
 -- IT ALC (3rditalc) remains ACTIVE - no changes
+-- IT ML (3rditml) remains ACTIVE - no changes
 
 -- ============================================
 -- VERIFY STATUS
@@ -95,11 +96,20 @@ SELECT
     SUM(CASE WHEN is_active = FALSE THEN 1 ELSE 0 END) as inactive_students
 FROM "3rditalc"
 
+UNION ALL
+
+SELECT 
+    '3rditml (IT ML) ✅ ACTIVE' as table_name,
+    COUNT(*) as total_students,
+    SUM(CASE WHEN is_active = TRUE THEN 1 ELSE 0 END) as active_students,
+    SUM(CASE WHEN is_active = FALSE THEN 1 ELSE 0 END) as inactive_students
+FROM "3rditml"
+
 ORDER BY table_name;
 
 -- ============================================
 -- SUMMARY MESSAGE
 -- ============================================
 SELECT 
-    '✅ ALL EXAMS DISABLED EXCEPT IT ALC (ITALC771)' as status,
-    'Only 3rditalc students can login now' as message;
+    '✅ ALL EXAMS DISABLED EXCEPT IT ALC AND IT ML' as status,
+    'Only 3rditalc (ITALC771) and 3rditml (ML771) students can login now' as message;

@@ -1,0 +1,129 @@
+-- Setup IT ML (Machine Learning) Exam System
+-- Table 1: Student Verification Table (3rd Year IT)
+-- Table 2: Results Table
+
+-- Drop existing tables if they exist
+DROP TABLE IF EXISTS "3rditmlresults" CASCADE;
+DROP TABLE IF EXISTS "3rditml" CASCADE;
+
+-- Create Student Verification Table
+CREATE TABLE "3rditml" (
+    id SERIAL PRIMARY KEY,
+    roll_number VARCHAR(20) UNIQUE NOT NULL,
+    unique_code VARCHAR(20) NOT NULL DEFAULT 'ML771',
+    is_active BOOLEAN DEFAULT TRUE,
+    verified_at TIMESTAMP,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Create Results Table
+CREATE TABLE "3rditmlresults" (
+    id SERIAL PRIMARY KEY,
+    roll_number VARCHAR(20) NOT NULL,
+    correct_answers INTEGER NOT NULL,
+    wrong_answers INTEGER NOT NULL,
+    total_questions INTEGER NOT NULL DEFAULT 10,
+    marks DECIMAL(5,2) NOT NULL,
+    percentage DECIMAL(5,2) NOT NULL,
+    user_answers JSONB,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (roll_number) REFERENCES "3rditml"(roll_number) ON DELETE CASCADE
+);
+
+-- Insert all 86 IT roll numbers with unique code 'ML771' (same students as IT ALC)
+INSERT INTO "3rditml" (roll_number, unique_code) VALUES
+('160523737050', 'ML771'),
+('160524737001', 'ML771'),
+('160524737002', 'ML771'),
+('160524737003', 'ML771'),
+('160524737004', 'ML771'),
+('160524737005', 'ML771'),
+('160524737006', 'ML771'),
+('160524737007', 'ML771'),
+('160524737008', 'ML771'),
+('160524737010', 'ML771'),
+('160524737011', 'ML771'),
+('160524737012', 'ML771'),
+('160524737013', 'ML771'),
+('160524737014', 'ML771'),
+('160524737015', 'ML771'),
+('160524737016', 'ML771'),
+('160524737017', 'ML771'),
+('160524737019', 'ML771'),
+('160524737020', 'ML771'),
+('160524737021', 'ML771'),
+('160524737022', 'ML771'),
+('160524737023', 'ML771'),
+('160524737024', 'ML771'),
+('160524737025', 'ML771'),
+('160524737026', 'ML771'),
+('160524737027', 'ML771'),
+('160524737028', 'ML771'),
+('160524737029', 'ML771'),
+('160524737030', 'ML771'),
+('160524737031', 'ML771'),
+('160524737032', 'ML771'),
+('160524737033', 'ML771'),
+('160524737034', 'ML771'),
+('160524737035', 'ML771'),
+('160524737036', 'ML771'),
+('160524737037', 'ML771'),
+('160524737038', 'ML771'),
+('160524737039', 'ML771'),
+('160524737040', 'ML771'),
+('160524737041', 'ML771'),
+('160524737042', 'ML771'),
+('160524737043', 'ML771'),
+('160524737044', 'ML771'),
+('160524737045', 'ML771'),
+('160524737052', 'ML771'),
+('160524737053', 'ML771'),
+('160524737054', 'ML771'),
+('160524737055', 'ML771'),
+('160524737056', 'ML771'),
+('160524737057', 'ML771'),
+('160524737058', 'ML771'),
+('160524737059', 'ML771'),
+('160524737060', 'ML771'),
+('160524737061', 'ML771'),
+('160524737062', 'ML771'),
+('160524737063', 'ML771'),
+('160524737064', 'ML771'),
+('160524737065', 'ML771'),
+('160524737066', 'ML771'),
+('160524737067', 'ML771'),
+('160524737068', 'ML771'),
+('160524737069', 'ML771'),
+('160524737070', 'ML771'),
+('160524737071', 'ML771'),
+('160524737072', 'ML771'),
+('160524737073', 'ML771'),
+('160524737074', 'ML771'),
+('160524737075', 'ML771'),
+('160524737076', 'ML771'),
+('160524737077', 'ML771'),
+('160524737078', 'ML771'),
+('160524737080', 'ML771'),
+('160524737081', 'ML771'),
+('160524737082', 'ML771'),
+('160524737083', 'ML771'),
+('160524737084', 'ML771'),
+('160524737085', 'ML771'),
+('160524737086', 'ML771'),
+('160524737087', 'ML771'),
+('160524737088', 'ML771'),
+('160524737089', 'ML771'),
+('160524737301', 'ML771'),
+('160524737302', 'ML771');
+
+-- Create indexes for better performance
+CREATE INDEX idx_itml_roll_number ON "3rditml"(roll_number);
+CREATE INDEX idx_itml_results_roll_number ON "3rditmlresults"(roll_number);
+CREATE INDEX idx_itml_created_at ON "3rditmlresults"(created_at);
+
+-- Prevent duplicate submissions
+ALTER TABLE "3rditmlresults" 
+ADD CONSTRAINT unique_itml_submission UNIQUE (roll_number);
+
+-- Verify data
+SELECT COUNT(*) as total_students FROM "3rditml";
