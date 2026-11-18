@@ -230,36 +230,30 @@ function isMobileDevice() {
 }
 
 // ============================================
-// START EXAM WITH FULLSCREEN (Optional on Mobile)
+// START EXAM WITH FULLSCREEN (MANDATORY FOR ALL)
 // ============================================
 
 document.getElementById('startExamBtn').addEventListener('click', async () => {
     isMobile = isMobileDevice();
     
-    if (isMobile) {
-        // On mobile, fullscreen is optional - start exam directly
-        console.log('📱 Mobile device detected - fullscreen optional');
-        initializeExam();
-    } else {
-        // On desktop, require fullscreen
-        try {
-            const elem = document.documentElement;
-            
-            if (elem.requestFullscreen) {
-                await elem.requestFullscreen();
-            } else if (elem.webkitRequestFullscreen) {
-                await elem.webkitRequestFullscreen();
-            } else if (elem.msRequestFullscreen) {
-                await elem.msRequestFullscreen();
-            }
-            
-            // Start exam after fullscreen is activated
-            setTimeout(initializeExam, 500);
-            
-        } catch (error) {
-            alert('Fullscreen is required to start the exam. Please allow fullscreen access.');
-            console.error('Fullscreen error:', error);
+    try {
+        // Request fullscreen for EVERYONE (mobile + desktop)
+        const elem = document.documentElement;
+        
+        if (elem.requestFullscreen) {
+            await elem.requestFullscreen();
+        } else if (elem.webkitRequestFullscreen) {
+            await elem.webkitRequestFullscreen();
+        } else if (elem.msRequestFullscreen) {
+            await elem.msRequestFullscreen();
         }
+        
+        // Start exam after fullscreen is activated
+        setTimeout(initializeExam, 500);
+        
+    } catch (error) {
+        alert('Fullscreen is required to start the exam. Please allow fullscreen access.');
+        console.error('Fullscreen error:', error);
     }
 });
 
@@ -554,11 +548,9 @@ function showExitConfirmationModal() {
 // ============================================
 
 function setupAntiCheat() {
-    // Monitor fullscreen exit (only on desktop)
-    if (!isMobile) {
-        document.addEventListener('fullscreenchange', handleFullscreenChange);
-        document.addEventListener('webkitfullscreenchange', handleFullscreenChange);
-    }
+    // Monitor fullscreen exit (MANDATORY FOR ALL - mobile + desktop)
+    document.addEventListener('fullscreenchange', handleFullscreenChange);
+    document.addEventListener('webkitfullscreenchange', handleFullscreenChange);
     
     // Monitor visibility change with grace period (mobile-friendly)
     document.addEventListener('visibilitychange', handleVisibilityChange);
