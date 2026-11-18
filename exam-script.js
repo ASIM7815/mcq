@@ -98,6 +98,11 @@ document.getElementById('loginForm').addEventListener('submit', async (e) => {
         subjectConfig.tableName = '"3rdeceewp"';
         subjectConfig.resultsTable = '"3rdeceewpresults"';
         subjectConfig.questionBank = awpQuestions;
+    } else if (uniqueCode.toLowerCase() === 'dsp771') {
+        currentSubject = '3rd ECE DSP';
+        subjectConfig.tableName = '"3rdecedsp"';
+        subjectConfig.resultsTable = '"3rdecedspresults"';
+        subjectConfig.questionBank = dspQuestions;
     } else {
         hideLoading();
         alert('Invalid unique code! Please check and try again.');

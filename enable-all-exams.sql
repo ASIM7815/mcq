@@ -63,6 +63,11 @@ UPDATE "3rdeceewp"
 SET is_active = TRUE
 WHERE is_active = FALSE;
 
+-- Enable ECE DSP (3rd Year ECE)
+UPDATE "3rdecedsp" 
+SET is_active = TRUE
+WHERE is_active = FALSE;
+
 -- ============================================
 -- VERIFY STATUS
 -- ============================================
@@ -143,6 +148,14 @@ SELECT
     COUNT(*) as total_students,
     SUM(CASE WHEN is_active = TRUE THEN 1 ELSE 0 END) as active_students
 FROM "3rdeceewp"
+
+UNION ALL
+
+SELECT 
+    '3rdecedsp (ECE DSP)' as table_name,
+    COUNT(*) as total_students,
+    SUM(CASE WHEN is_active = TRUE THEN 1 ELSE 0 END) as active_students
+FROM "3rdecedsp"
 
 ORDER BY table_name;
 
