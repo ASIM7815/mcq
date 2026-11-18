@@ -73,6 +73,11 @@ UPDATE "3rdecempmc"
 SET is_active = TRUE
 WHERE is_active = FALSE;
 
+-- Enable 2nd ECE DE (2nd Year ECE)
+UPDATE "2ndecede" 
+SET is_active = TRUE
+WHERE is_active = FALSE;
+
 -- ============================================
 -- VERIFY STATUS
 -- ============================================
@@ -169,6 +174,14 @@ SELECT
     COUNT(*) as total_students,
     SUM(CASE WHEN is_active = TRUE THEN 1 ELSE 0 END) as active_students
 FROM "3rdecempmc"
+
+UNION ALL
+
+SELECT 
+    '2ndecede (2nd ECE DE)' as table_name,
+    COUNT(*) as total_students,
+    SUM(CASE WHEN is_active = TRUE THEN 1 ELSE 0 END) as active_students
+FROM "2ndecede"
 
 ORDER BY table_name;
 

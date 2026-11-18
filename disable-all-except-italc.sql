@@ -36,7 +36,7 @@ SET is_active = FALSE
 WHERE is_active = TRUE;
 
 -- ============================================
--- KEEP ALL IT EXAMS ACTIVE (DO NOT TOUCH)
+-- KEEP ALL IT & ECE EXAMS ACTIVE (DO NOT TOUCH)
 -- ============================================
 -- IT Python (2nditpython) remains ACTIVE - no changes
 -- IT DM (2nditdms) remains ACTIVE - no changes
@@ -45,6 +45,7 @@ WHERE is_active = TRUE;
 -- ECE AWP (3rdeceewp) remains ACTIVE - no changes
 -- ECE DSP (3rdecedsp) remains ACTIVE - no changes
 -- ECE MPMC (3rdecempmc) remains ACTIVE - no changes
+-- 2nd ECE DE (2ndecede) remains ACTIVE - no changes
 
 -- ============================================
 -- VERIFY STATUS
@@ -155,6 +156,15 @@ SELECT
     SUM(CASE WHEN is_active = FALSE THEN 1 ELSE 0 END) as inactive_students
 FROM "3rdecempmc"
 
+UNION ALL
+
+SELECT 
+    '2ndecede (2nd ECE DE) ✅ ACTIVE' as table_name,
+    COUNT(*) as total_students,
+    SUM(CASE WHEN is_active = TRUE THEN 1 ELSE 0 END) as active_students,
+    SUM(CASE WHEN is_active = FALSE THEN 1 ELSE 0 END) as inactive_students
+FROM "2ndecede"
+
 ORDER BY table_name;
 
 -- ============================================
@@ -162,4 +172,4 @@ ORDER BY table_name;
 -- ============================================
 SELECT 
     '✅ ALL CSE EXAMS DISABLED - IT & ECE EXAMS ACTIVE' as status,
-    'Only IT (DMS771, PY771, ITALC771, ML771) and ECE (EWP771, DSP771, MPMC771) students can login now' as message;
+    'Only IT (DMS771, PY771, ITALC771, ML771) and ECE (EWP771, DSP771, MPMC771, DE771) students can login now' as message;
