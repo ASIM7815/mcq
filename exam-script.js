@@ -414,11 +414,15 @@ document.getElementById('confirmSubmitBtn').addEventListener('click', () => {
 
 // Exit confirmation modal handlers
 document.getElementById('cancelExitBtn').addEventListener('click', () => {
+    // Just close modal, stay in fullscreen, continue exam
     document.getElementById('exitConfirmModal').classList.remove('active');
+    console.log('✅ Exit cancelled - continuing exam in fullscreen');
 });
 
 document.getElementById('confirmExitBtn').addEventListener('click', () => {
+    // Close modal and submit exam (fullscreen will exit in submitExam)
     document.getElementById('exitConfirmModal').classList.remove('active');
+    console.log('⚠️ Exit confirmed - submitting exam');
     submitExam(false);
 });
 
@@ -504,8 +508,9 @@ async function submitExam(isViolation = false) {
         hideLoading();
     }
     
-    // Exit fullscreen
+    // Exit fullscreen ONLY when exam is submitted
     if (document.fullscreenElement) {
+        console.log('🖥️ Exiting fullscreen - exam submitted');
         document.exitFullscreen().catch(err => console.log(err));
     }
     
@@ -552,7 +557,7 @@ function setupBackButtonHandler() {
         // Push state back to keep user on exam page
         window.history.pushState({ examPage: true }, '', '');
         
-        // Show exit confirmation modal
+        // Show exit confirmation modal WITHOUT exiting fullscreen
         showExitConfirmationModal();
     });
 }
@@ -561,6 +566,8 @@ function showExitConfirmationModal() {
     const exitModal = document.getElementById('exitConfirmModal');
     if (exitModal) {
         exitModal.classList.add('active');
+        // Fullscreen stays active - modal appears on top
+        console.log('📱 Back button pressed - showing exit confirmation (fullscreen maintained)');
     }
 }
 
