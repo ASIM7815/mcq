@@ -22,8 +22,10 @@ let subjectConfig = {
 // Mobile-friendly anti-cheat variables
 let appSwitchTimer = null;
 let gracePeriodActive = false;
-const GRACE_PERIOD_MS = 20000; // 20 seconds
+const GRACE_PERIOD_MS = 10000; // 10 seconds
 let isMobile = false;
+let countdownInterval = null;
+let secondsRemaining = 10;
 
 // ============================================
 // DOM ELEMENTS
@@ -420,6 +422,25 @@ document.getElementById('confirmExitBtn').addEventListener('click', () => {
     submitExam(false);
 });
 
+// Countdown modal continue button handler
+document.getElementById('continueExamBtn').addEventListener('click', async () => {
+    // Clear timers
+    if (appSwitchTimer) {
+        clearTimeout(appSwitchTimer);
+        appSwitchTimer = null;
+    }
+    if (countdownInterval) {
+        clearInterval(countdownInterval);
+        countdownInterval = null;
+    }
+    
+    gracePeriodActive = false;
+    hideCountdownModal();
+    
+    // Re-enter fullscreen and continue
+    await reenterFullscreenAndContinue();
+});
+
 // ============================================
 // SUBMIT EXAM
 // ============================================
@@ -597,14 +618,22 @@ function handleVisibilityChange() {
     if (!examStarted || gracePeriodActive) return;
     
     if (document.hidden) {
-        console.log('📱 Tab/App switched - Starting 20s grace period');
+        console.log('📱 Tab/App switched - Starting 10s countdown');
         
         // Start grace period timer
         gracePeriodActive = true;
+        secondsRemaining = 10;
+        
+        // Show countdown modal
+        showCountdownModal();
+        
+        // Start countdown
+        startCountdown();
         
         appSwitchTimer = setTimeout(() => {
             // Grace period expired without return
             console.log('⚠️ Grace period expired - Submitting exam');
+            hideCountdownModal();
             showViolationModal('You were away for too long.');
             setTimeout(() => {
                 violationDetected = true;
@@ -616,12 +645,15 @@ function handleVisibilityChange() {
         // User returned to tab
         if (appSwitchTimer && gracePeriodActive) {
             clearTimeout(appSwitchTimer);
+            clearInterval(countdownInterval);
             appSwitchTimer = null;
+            countdownInterval = null;
             gracePeriodActive = false;
+            hideCountdownModal();
             console.log('✅ User returned within grace period');
             
-            // Show continue exam popup
-            showContinueExamPopup();
+            // Re-enter fullscreen and show same question
+            reenterFullscreenAndContinue();
         }
     }
 }
@@ -630,13 +662,21 @@ function handleWindowBlur() {
     if (!examStarted || gracePeriodActive) return;
     
     // This could be a notification, call, or intentional app switch
-    // Start grace period instead of instant violation
-    console.log('📱 Window blur detected - Starting grace period');
+    // Start grace period with countdown
+    console.log('📱 Window blur detected - Starting countdown');
     gracePeriodActive = true;
+    secondsRemaining = 10;
+    
+    // Show countdown modal
+    showCountdownModal();
+    
+    // Start countdown
+    startCountdown();
     
     appSwitchTimer = setTimeout(() => {
         // Grace period expired
         console.log('⚠️ Window blur grace period expired');
+        hideCountdownModal();
         showViolationModal('You switched away from the exam for too long.');
         setTimeout(() => {
             violationDetected = true;
@@ -652,11 +692,69 @@ function handleWindowFocus() {
     // User returned to window
     if (appSwitchTimer && gracePeriodActive) {
         clearTimeout(appSwitchTimer);
+        clearInterval(countdownInterval);
         appSwitchTimer = null;
+        countdownInterval = null;
         gracePeriodActive = false;
+        hideCountdownModal();
         console.log('✅ User returned to exam window');
         
-        // Show continue exam popup
+        // Re-enter fullscreen and show same question
+        reenterFullscreenAndContinue();
+    }
+}
+
+function showCountdownModal() {
+    const countdownModal = document.getElementById('countdownModal');
+    if (countdownModal) {
+        document.getElementById('countdownSeconds').textContent = secondsRemaining;
+        countdownModal.classList.add('active');
+    }
+}
+
+function hideCountdownModal() {
+    const countdownModal = document.getElementById('countdownModal');
+    if (countdownModal) {
+        countdownModal.classList.remove('active');
+    }
+}
+
+function startCountdown() {
+    countdownInterval = setInterval(() => {
+        secondsRemaining--;
+        const countdownElement = document.getElementById('countdownSeconds');
+        if (countdownElement) {
+            countdownElement.textContent = secondsRemaining;
+        }
+        
+        if (secondsRemaining <= 0) {
+            clearInterval(countdownInterval);
+            countdownInterval = null;
+        }
+    }, 1000);
+}
+
+async function reenterFullscreenAndContinue() {
+    try {
+        // Request fullscreen again
+        const elem = document.documentElement;
+        
+        if (elem.requestFullscreen) {
+            await elem.requestFullscreen();
+        } else if (elem.webkitRequestFullscreen) {
+            await elem.webkitRequestFullscreen();
+        } else if (elem.msRequestFullscreen) {
+            await elem.msRequestFullscreen();
+        }
+        
+        console.log('✅ Fullscreen re-entered, continuing with same question');
+        
+        // Show brief continue message
+        showContinueExamPopup();
+        
+    } catch (error) {
+        console.error('Failed to re-enter fullscreen:', error);
+        // If fullscreen fails, show continue popup anyway
         showContinueExamPopup();
     }
 }

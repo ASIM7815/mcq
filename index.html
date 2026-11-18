@@ -63,7 +63,7 @@
                         <span class="rule-icon">⚠️</span>
                         <div>
                             <strong>IMPORTANT:</strong> The exam will run in <strong>fullscreen mode</strong>. 
-                            Do NOT exit fullscreen or stay away from the exam for more than 20 seconds.
+                            Do NOT exit fullscreen or stay away from the exam for more than 10 seconds.
                         </div>
                     </div>
                     
@@ -77,12 +77,12 @@
                     <div class="rule-item">
                         <span class="rule-icon">📱</span>
                         <div>
-                            <strong>Grace Period for Brief Interruptions:</strong>
+                            <strong>10-Second Grace Period:</strong>
                             <ul>
-                                <li>Notifications and incoming calls have 20-second grace period</li>
-                                <li>You have 20 seconds to return if you receive a call or notification</li>
-                                <li>Back button will show confirmation before exit</li>
-                                <li>Return within 20 seconds and continue your exam</li>
+                                <li>If you switch to another app, a 10-second countdown will start</li>
+                                <li>Click "Continue" button to return to exam and re-enter fullscreen</li>
+                                <li>You'll return to the same question you were on</li>
+                                <li>If 10 seconds expire, your exam will auto-submit</li>
                             </ul>
                         </div>
                     </div>
@@ -93,8 +93,7 @@
                             <strong>Violations that will AUTO-SUBMIT your exam:</strong>
                             <ul>
                                 <li>Exiting fullscreen mode</li>
-                                <li>Staying away from exam for more than 20 seconds</li>
-                                <li>Switching to other apps for extended period</li>
+                                <li>Not returning within 10 seconds after app switch</li>
                                 <li>Using back button and confirming exit</li>
                             </ul>
                         </div>
@@ -240,11 +239,27 @@
         </div>
     </div>
 
+    <!-- Countdown Modal (App Switch Detection) -->
+    <div id="countdownModal" class="modal">
+        <div class="modal-content modal-countdown">
+            <h3>⏱️ Return to Exam</h3>
+            <p>You have switched away from the exam.</p>
+            <div class="countdown-display">
+                <span class="countdown-number" id="countdownSeconds">10</span>
+                <span class="countdown-label">seconds remaining</span>
+            </div>
+            <p class="modal-info-text">Click Continue to return to your exam and re-enter fullscreen</p>
+            <button class="btn btn-success btn-large" id="continueExamBtn">
+                Continue Exam
+            </button>
+        </div>
+    </div>
+
     <!-- Continue Exam Popup -->
     <div id="continueExamPopup" class="continue-exam-popup">
         <div class="continue-popup-content">
             <span class="continue-icon">✅</span>
-            <p>Please continue your exam</p>
+            <p>Continuing your exam...</p>
         </div>
     </div>
 
