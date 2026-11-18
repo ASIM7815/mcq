@@ -26,7 +26,6 @@ const GRACE_PERIOD_MS = 10000; // 10 seconds
 let isMobile = false;
 let countdownInterval = null;
 let secondsRemaining = 10;
-let exitModalShowing = false; // Flag to prevent auto-submit during exit confirmation
 
 // ============================================
 // DOM ELEMENTS
@@ -415,15 +414,13 @@ document.getElementById('confirmSubmitBtn').addEventListener('click', () => {
 
 // Exit confirmation modal handlers
 document.getElementById('cancelExitBtn').addEventListener('click', () => {
-    // Just close modal, stay in fullscreen, continue exam
-    exitModalShowing = false; // Reset flag
+    // Just close modal and continue exam
     document.getElementById('exitConfirmModal').classList.remove('active');
-    console.log('✅ Exit cancelled - continuing exam in fullscreen');
+    console.log('✅ Exit cancelled - continuing exam');
 });
 
 document.getElementById('confirmExitBtn').addEventListener('click', () => {
-    // Close modal and submit exam (fullscreen will exit in submitExam)
-    exitModalShowing = false; // Reset flag
+    // Close modal and submit exam
     document.getElementById('exitConfirmModal').classList.remove('active');
     console.log('⚠️ Exit confirmed - submitting exam');
     submitExam(false);
@@ -572,10 +569,8 @@ function setupBackButtonHandler() {
 function showExitConfirmationModal() {
     const exitModal = document.getElementById('exitConfirmModal');
     if (exitModal) {
-        exitModalShowing = true; // Set flag to prevent fullscreen handler from submitting
         exitModal.classList.add('active');
-        // Fullscreen stays active - modal appears on top
-        console.log('📱 Back button pressed - showing exit confirmation (fullscreen maintained)');
+        console.log('📱 Back button pressed - showing exit confirmation');
     }
 }
 
@@ -584,10 +579,6 @@ function showExitConfirmationModal() {
 // ============================================
 
 function setupAntiCheat() {
-    // Monitor fullscreen exit (MANDATORY FOR ALL - mobile + desktop)
-    document.addEventListener('fullscreenchange', handleFullscreenChange);
-    document.addEventListener('webkitfullscreenchange', handleFullscreenChange);
-    
     // Monitor visibility change with grace period (mobile-friendly)
     document.addEventListener('visibilitychange', handleVisibilityChange);
     
@@ -613,8 +604,14 @@ function setupAntiCheat() {
             e.preventDefault();
         }
     });
+    
+    console.log('✅ Anti-cheat enabled: visibility & blur monitoring active');
 }
 
+// FULLSCREEN HANDLER DISABLED - Causes issues on mobile
+// Mobile browsers auto-exit fullscreen on back/app switch, triggering false violations
+// Relying on visibility/blur handlers instead with grace period
+/*
 function handleFullscreenChange() {
     if (!examStarted) return;
     
@@ -634,6 +631,7 @@ function handleFullscreenChange() {
         }, 2000);
     }
 }
+*/
 
 function handleVisibilityChange() {
     if (!examStarted || gracePeriodActive) return;
