@@ -103,6 +103,11 @@ document.getElementById('loginForm').addEventListener('submit', async (e) => {
         subjectConfig.tableName = '"3rdecedsp"';
         subjectConfig.resultsTable = '"3rdecedspresults"';
         subjectConfig.questionBank = dspQuestions;
+    } else if (uniqueCode.toLowerCase() === 'mpmc771') {
+        currentSubject = '3rd ECE MPMC';
+        subjectConfig.tableName = '"3rdecempmc"';
+        subjectConfig.resultsTable = '"3rdecempmcresults"';
+        subjectConfig.questionBank = mpmcQuestions;
     } else {
         hideLoading();
         alert('Invalid unique code! Please check and try again.');

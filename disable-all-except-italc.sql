@@ -44,6 +44,7 @@ WHERE is_active = TRUE;
 -- IT ML (3rditml) remains ACTIVE - no changes
 -- ECE AWP (3rdeceewp) remains ACTIVE - no changes
 -- ECE DSP (3rdecedsp) remains ACTIVE - no changes
+-- ECE MPMC (3rdecempmc) remains ACTIVE - no changes
 
 -- ============================================
 -- VERIFY STATUS
@@ -145,6 +146,15 @@ SELECT
     SUM(CASE WHEN is_active = FALSE THEN 1 ELSE 0 END) as inactive_students
 FROM "3rdecedsp"
 
+UNION ALL
+
+SELECT 
+    '3rdecempmc (ECE MPMC) ✅ ACTIVE' as table_name,
+    COUNT(*) as total_students,
+    SUM(CASE WHEN is_active = TRUE THEN 1 ELSE 0 END) as active_students,
+    SUM(CASE WHEN is_active = FALSE THEN 1 ELSE 0 END) as inactive_students
+FROM "3rdecempmc"
+
 ORDER BY table_name;
 
 -- ============================================
@@ -152,4 +162,4 @@ ORDER BY table_name;
 -- ============================================
 SELECT 
     '✅ ALL CSE EXAMS DISABLED - IT & ECE EXAMS ACTIVE' as status,
-    'Only IT (DMS771, PY771, ITALC771, ML771) and ECE (EWP771, DSP771) students can login now' as message;
+    'Only IT (DMS771, PY771, ITALC771, ML771) and ECE (EWP771, DSP771, MPMC771) students can login now' as message;

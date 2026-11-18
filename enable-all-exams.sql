@@ -68,6 +68,11 @@ UPDATE "3rdecedsp"
 SET is_active = TRUE
 WHERE is_active = FALSE;
 
+-- Enable ECE MPMC (3rd Year ECE)
+UPDATE "3rdecempmc" 
+SET is_active = TRUE
+WHERE is_active = FALSE;
+
 -- ============================================
 -- VERIFY STATUS
 -- ============================================
@@ -156,6 +161,14 @@ SELECT
     COUNT(*) as total_students,
     SUM(CASE WHEN is_active = TRUE THEN 1 ELSE 0 END) as active_students
 FROM "3rdecedsp"
+
+UNION ALL
+
+SELECT 
+    '3rdecempmc (ECE MPMC)' as table_name,
+    COUNT(*) as total_students,
+    SUM(CASE WHEN is_active = TRUE THEN 1 ELSE 0 END) as active_students
+FROM "3rdecempmc"
 
 ORDER BY table_name;
 
