@@ -26,6 +26,7 @@ const GRACE_PERIOD_MS = 10000; // 10 seconds
 let isMobile = false;
 let countdownInterval = null;
 let secondsRemaining = 10;
+let exitModalShowing = false; // Flag to prevent auto-submit during exit confirmation
 
 // ============================================
 // DOM ELEMENTS
@@ -415,12 +416,14 @@ document.getElementById('confirmSubmitBtn').addEventListener('click', () => {
 // Exit confirmation modal handlers
 document.getElementById('cancelExitBtn').addEventListener('click', () => {
     // Just close modal, stay in fullscreen, continue exam
+    exitModalShowing = false; // Reset flag
     document.getElementById('exitConfirmModal').classList.remove('active');
     console.log('✅ Exit cancelled - continuing exam in fullscreen');
 });
 
 document.getElementById('confirmExitBtn').addEventListener('click', () => {
     // Close modal and submit exam (fullscreen will exit in submitExam)
+    exitModalShowing = false; // Reset flag
     document.getElementById('exitConfirmModal').classList.remove('active');
     console.log('⚠️ Exit confirmed - submitting exam');
     submitExam(false);
@@ -565,6 +568,7 @@ function setupBackButtonHandler() {
 function showExitConfirmationModal() {
     const exitModal = document.getElementById('exitConfirmModal');
     if (exitModal) {
+        exitModalShowing = true; // Set flag to prevent fullscreen handler from submitting
         exitModal.classList.add('active');
         // Fullscreen stays active - modal appears on top
         console.log('📱 Back button pressed - showing exit confirmation (fullscreen maintained)');
@@ -610,8 +614,14 @@ function setupAntiCheat() {
 function handleFullscreenChange() {
     if (!examStarted) return;
     
+    // If exit modal is showing, don't trigger violation - user is making a choice
+    if (exitModalShowing) {
+        console.log('📱 Fullscreen change ignored - exit modal active');
+        return;
+    }
+    
     if (!document.fullscreenElement && !document.webkitFullscreenElement) {
-        // Fullscreen exited - submit exam (desktop only)
+        // Fullscreen exited - submit exam
         showViolationModal('You exited fullscreen mode.');
         setTimeout(() => {
             violationDetected = true;
