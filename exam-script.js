@@ -88,6 +88,11 @@ document.getElementById('loginForm').addEventListener('submit', async (e) => {
         subjectConfig.tableName = '"2nditpython"';
         subjectConfig.resultsTable = '"2nditpythonresults"';
         subjectConfig.questionBank = itpyQuestions;
+    } else if (uniqueCode.toLowerCase() === 'dms771') {
+        currentSubject = '2nd IT DM';
+        subjectConfig.tableName = '"2nditdms"';
+        subjectConfig.resultsTable = '"2nditdmsresults"';
+        subjectConfig.questionBank = dmQuestions;
     } else {
         hideLoading();
         alert('Invalid unique code! Please check and try again.');

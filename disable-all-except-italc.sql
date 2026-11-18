@@ -39,6 +39,7 @@ WHERE is_active = TRUE;
 -- KEEP ALL IT EXAMS ACTIVE (DO NOT TOUCH)
 -- ============================================
 -- IT Python (2nditpython) remains ACTIVE - no changes
+-- IT DM (2nditdms) remains ACTIVE - no changes
 -- IT ALC (3rditalc) remains ACTIVE - no changes
 -- IT ML (3rditml) remains ACTIVE - no changes
 
@@ -91,6 +92,15 @@ FROM "3rdcsese"
 UNION ALL
 
 SELECT 
+    '2nditdms (2nd IT DM) ✅ ACTIVE' as table_name,
+    COUNT(*) as total_students,
+    SUM(CASE WHEN is_active = TRUE THEN 1 ELSE 0 END) as active_students,
+    SUM(CASE WHEN is_active = FALSE THEN 1 ELSE 0 END) as inactive_students
+FROM "2nditdms"
+
+UNION ALL
+
+SELECT 
     '2nditpython (IT Python) ✅ ACTIVE' as table_name,
     COUNT(*) as total_students,
     SUM(CASE WHEN is_active = TRUE THEN 1 ELSE 0 END) as active_students,
@@ -122,4 +132,4 @@ ORDER BY table_name;
 -- ============================================
 SELECT 
     '✅ ALL CSE EXAMS DISABLED - ALL IT EXAMS ACTIVE' as status,
-    'Only IT students (PY771, ITALC771, ML771) can login now' as message;
+    'Only IT students (DMS771, PY771, ITALC771, ML771) can login now' as message;

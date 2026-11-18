@@ -35,22 +35,25 @@ SET is_active = TRUE
 WHERE is_active = FALSE;
 
 -- ============================================
--- ENABLE IT PYTHON (Already active, but just in case)
+-- ENABLE IT EXAMS (Already active, but just in case)
 -- ============================================
+
+-- Enable IT DM (2nd Year IT)
+UPDATE "2nditdms" 
+SET is_active = TRUE
+WHERE is_active = FALSE;
+
+-- Enable IT Python (2nd Year IT)
 UPDATE "2nditpython" 
 SET is_active = TRUE
 WHERE is_active = FALSE;
 
--- ============================================
--- ENABLE IT ALC (Already active, but just in case)
--- ============================================
+-- Enable IT ALC (3rd Year IT)
 UPDATE "3rditalc" 
 SET is_active = TRUE
 WHERE is_active = FALSE;
 
--- ============================================
--- ENABLE IT ML (Already active, but just in case)
--- ============================================
+-- Enable IT ML (3rd Year IT)
 UPDATE "3rditml" 
 SET is_active = TRUE
 WHERE is_active = FALSE;
@@ -95,6 +98,14 @@ SELECT
     COUNT(*) as total_students,
     SUM(CASE WHEN is_active = TRUE THEN 1 ELSE 0 END) as active_students
 FROM "3rdcsese"
+
+UNION ALL
+
+SELECT 
+    '2nditdms (2nd IT DM)' as table_name,
+    COUNT(*) as total_students,
+    SUM(CASE WHEN is_active = TRUE THEN 1 ELSE 0 END) as active_students
+FROM "2nditdms"
 
 UNION ALL
 
