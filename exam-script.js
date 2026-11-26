@@ -136,6 +136,11 @@ document.getElementById('loginForm').addEventListener('submit', async (e) => {
         subjectConfig.tableName = '"2ndaidsdsa"';
         subjectConfig.resultsTable = '"2ndaidsdsaresults"';
         subjectConfig.questionBank = dsaQuestions;
+    } else if (uniqueCode.toLowerCase() === 'dmaids117') {
+        currentSubject = '2nd AIDS DM';
+        subjectConfig.tableName = '"2ndaidsdm"';
+        subjectConfig.resultsTable = '"2ndaidsdmresults"';
+        subjectConfig.questionBank = dmQuestions;
     } else {
         hideLoading();
         alert('Invalid unique code! Please check and try again.');
