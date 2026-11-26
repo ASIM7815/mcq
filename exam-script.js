@@ -503,7 +503,16 @@ async function submitExam(isViolation = false) {
     try {
         showLoading();
         
-        await fetch('/api/save-results', {
+        console.log('💾 Saving results to:', subjectConfig.resultsTable);
+        console.log('📊 Data:', {
+            rollNumber: currentStudent.rollNumber,
+            correctAnswers: correctAnswers,
+            wrongAnswers: wrongAnswers,
+            marks: marks.toFixed(2),
+            percentage: percentage.toFixed(2)
+        });
+        
+        const response = await fetch('/api/save-results', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -520,10 +529,20 @@ async function submitExam(isViolation = false) {
             })
         });
         
+        const result = await response.json();
+        
+        if (result.success) {
+            console.log('✅ Results saved successfully!');
+        } else {
+            console.error('❌ Failed to save results:', result.error);
+            alert('Warning: Results may not have been saved. Error: ' + result.error);
+        }
+        
         hideLoading();
         
     } catch (error) {
-        console.error('Error saving results:', error);
+        console.error('❌ Error saving results:', error);
+        alert('Warning: Results may not have been saved. Check console for details.');
         hideLoading();
     }
     
