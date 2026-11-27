@@ -23,9 +23,19 @@ export default async function handler(req, res) {
         // Initialize Neon connection
         const sql = neon(process.env.NEON_DATABASE_URL);
         
-        // Query to validate student
+        // Clean table name - remove extra quotes if present
+        const cleanTableName = tableName.replace(/"/g, '');
+        
+        console.log('🔍 Validating student:', {
+            originalTableName: tableName,
+            cleanTableName: cleanTableName,
+            rollNumber: rollNumber,
+            uniqueCode: uniqueCode
+        });
+        
+        // Query to validate student with proper table name escaping
         const query = `
-            SELECT * FROM ${tableName}
+            SELECT * FROM "${cleanTableName}"
             WHERE roll_number = $1 
             AND unique_code = $2
             AND is_active = true
@@ -57,10 +67,15 @@ export default async function handler(req, res) {
         
     } catch (error) {
         console.error('❌ Error validating student:', error);
+        console.error('Query details:', {
+            tableName: tableName,
+            rollNumber: rollNumber
+        });
         return res.status(500).json({
             success: false,
             error: error.message,
-            details: 'Failed to validate student credentials'
+            details: 'Failed to validate student credentials',
+            tableName: tableName
         });
     }
 }

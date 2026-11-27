@@ -32,9 +32,20 @@ export default async function handler(req, res) {
         // Initialize Neon connection
         const sql = neon(process.env.NEON_DATABASE_URL);
         
+        // Clean table name - remove extra quotes if present
+        const cleanTableName = tableName.replace(/"/g, '');
+        
+        console.log('💾 Attempting to save results:', {
+            originalTableName: tableName,
+            cleanTableName: cleanTableName,
+            rollNumber: rollNumber,
+            marks: marks
+        });
+        
         // Insert results into the respective results table
+        // Using parameterized query with proper table name escaping
         const query = `
-            INSERT INTO ${tableName} (
+            INSERT INTO "${cleanTableName}" (
                 roll_number,
                 correct_answers,
                 wrong_answers,
@@ -67,8 +78,8 @@ export default async function handler(req, res) {
         // Execute query
         const result = await sql(query, params);
         
-        console.log('✅ Results saved:', {
-            table: tableName,
+        console.log('✅ Results saved successfully:', {
+            table: cleanTableName,
             rollNumber: rollNumber,
             marks: marks
         });
@@ -82,10 +93,15 @@ export default async function handler(req, res) {
         
     } catch (error) {
         console.error('❌ Error saving results:', error);
+        console.error('Query details:', {
+            tableName: tableName,
+            rollNumber: rollNumber
+        });
         return res.status(500).json({
             success: false,
             error: error.message,
-            details: 'Failed to save exam results to database'
+            details: 'Failed to save exam results to database',
+            tableName: tableName
         });
     }
 }
