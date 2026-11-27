@@ -550,14 +550,14 @@ async function submitExam(isViolation = false) {
             console.log('✅ Results saved successfully!');
         } else {
             console.error('❌ Failed to save results:', result.error);
-            alert('Warning: Results may not have been saved. Error: ' + result.error);
+            // Silently log error - don't show alert to user
         }
         
         hideLoading();
         
     } catch (error) {
         console.error('❌ Error saving results:', error);
-        alert('Warning: Results may not have been saved. Check console for details.');
+        // Silently log error - don't show alert to user
         hideLoading();
     }
     
