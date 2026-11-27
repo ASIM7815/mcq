@@ -141,6 +141,21 @@ document.getElementById('loginForm').addEventListener('submit', async (e) => {
         subjectConfig.tableName = '"2ndaidsdm"';
         subjectConfig.resultsTable = '"2ndaidsdmresults"';
         subjectConfig.questionBank = dmQuestions;
+    } else if (uniqueCode.toLowerCase() === 'aiaids210') {
+        currentSubject = '3rd AIDS AI';
+        subjectConfig.tableName = '"3rdaidsai"';
+        subjectConfig.resultsTable = '"3rdaidsairesults"';
+        subjectConfig.questionBank = aiQuestions;
+    } else if (uniqueCode.toLowerCase() === 'iotaids210') {
+        currentSubject = '3rd AIDS IoT';
+        subjectConfig.tableName = '"3rdaidsiot"';
+        subjectConfig.resultsTable = '"3rdaidsiotresults"';
+        subjectConfig.questionBank = iotQuestions;
+    } else if (uniqueCode.toLowerCase() === 'alcaids210') {
+        currentSubject = '3rd AIDS ALC';
+        subjectConfig.tableName = '"3rdaidsalc"';
+        subjectConfig.resultsTable = '"3rdaidsalcresults"';
+        subjectConfig.questionBank = alcQuestions;
     } else {
         hideLoading();
         alert('Invalid unique code! Please check and try again.');
