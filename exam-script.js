@@ -544,12 +544,17 @@ async function submitExam(isViolation = false) {
             })
         });
         
+        console.log('📡 API Response Status:', response.status);
+        
         const result = await response.json();
+        
+        console.log('📡 API Response Body:', result);
         
         if (result.success) {
             console.log('✅ Results saved successfully!');
         } else {
             console.error('❌ Failed to save results:', result.error);
+            console.error('📋 Full error details:', result);
             // Silently log error - don't show alert to user
         }
         
